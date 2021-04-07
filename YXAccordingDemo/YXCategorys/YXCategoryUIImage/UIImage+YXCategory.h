@@ -78,6 +78,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 按比例缩放/压缩图片
+ * @param imgValue 图片
+ * @param targetSize 尺寸
+ */
++ (UIImage *)yxImgCompressForSizeImg:(id)imgValue
+                          targetSize:(CGSize)targetSize;
+
+/**
+ * 根据颜色创建图片
  * @param color 颜色
  * @param imgSize 尺寸
  */
