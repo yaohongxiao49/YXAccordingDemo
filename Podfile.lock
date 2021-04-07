@@ -1,0 +1,52 @@
+PODS:
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
+    - AFNetworking/NSURLSession
+  - HXPhotoPicker (3.1.8):
+    - HXPhotoPicker/Default (= 3.1.8)
+  - HXPhotoPicker/Default (3.1.8)
+  - libCGE (2.5.1)
+  - Masonry (1.1.0)
+
+DEPENDENCIES:
+  - AFNetworking
+  - HXPhotoPicker
+  - libCGE (from `https://github.com/wysaid/ios-gpuimage-plus-pod.git`)
+  - Masonry
+
+SPEC REPOS:
+  trunk:
+    - AFNetworking
+    - HXPhotoPicker
+    - Masonry
+
+EXTERNAL SOURCES:
+  libCGE:
+    :git: https://github.com/wysaid/ios-gpuimage-plus-pod.git
+
+CHECKOUT OPTIONS:
+  libCGE:
+    :commit: 775fa244f954e685692341e4da46ada653e97b5a
+    :git: https://github.com/wysaid/ios-gpuimage-plus-pod.git
+
+SPEC CHECKSUMS:
+  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  HXPhotoPicker: feac2119e5b90cbd3d634ebae9fc9fa62be7bb74
+  libCGE: 8d57dbe1f872737e8e37717ba771a78841c4ae0e
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+
+PODFILE CHECKSUM: bc1b281ab19a6a2ea0b92a97af431ae97bbf942e
+
+COCOAPODS: 1.10.1

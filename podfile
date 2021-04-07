@@ -1,0 +1,11 @@
+platform :ios, "10.0"
+def pods
+    pod 'AFNetworking' #网络请求
+    pod 'HXPhotoPicker' #相册选择
+    pod 'libCGE', :git => 'https://github.com/wysaid/ios-gpuimage-plus-pod.git' #滤镜
+    pod 'Masonry' #布局
+end
+
+target 'YXAccordingDemo' do
+    pods
+end
