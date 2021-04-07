@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^YXTakingPicNavigationViewBackBlock)(void);
+typedef void(^YXTakingPicNavigationViewChangeFlashBlock)(BOOL boolOpen);
 
 @interface YXTakingPicNavigationView : UIView
 
@@ -27,6 +28,7 @@ typedef void(^YXTakingPicNavigationViewBackBlock)(void);
 @property (weak, nonatomic) IBOutlet UIButton *flashBtn;
 
 @property (nonatomic, copy) YXTakingPicNavigationViewBackBlock yxTakingPicNavigationViewBackBlock;
+@property (nonatomic, copy) YXTakingPicNavigationViewChangeFlashBlock yxTakingPicNavigationViewChangeFlashBlock;
 
 @end
 

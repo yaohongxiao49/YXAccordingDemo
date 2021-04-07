@@ -28,6 +28,12 @@
 
 @implementation YXTakingPicVC
 
+- (void)dealloc {
+    
+    [self reductionCamera];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -62,7 +68,6 @@
 - (void)progressTakePicBtn {
     
     __weak typeof(self) weakSelf = self;
-    [self progressFlashBtn];
     if ([_myCameraViewHandler isGlobalFilterEnabled]) {
         [_myCameraViewHandler takeShot:^(UIImage *image) {
             
@@ -86,19 +91,10 @@
 }
 
 #pragma mark - 闪光灯
-- (void)progressFlashBtn {
+- (void)changeflashMethodByBoolOpen:(BOOL)boolOpen {
     
-    static AVCaptureFlashMode flashLightList[] = {
-        AVCaptureFlashModeOff,
-        AVCaptureFlashModeOn,
-        AVCaptureFlashModeAuto
-    };
-    static int flashLightIndex = 0;
-    
-    ++flashLightIndex;
-    flashLightIndex %= sizeof(flashLightList) /sizeof(*flashLightList);
-    
-    [_myCameraViewHandler setCameraFlashMode:flashLightList[flashLightIndex]];
+    AVCaptureFlashMode type = boolOpen ? AVCaptureFlashModeOn : AVCaptureFlashModeOff;
+    [_myCameraViewHandler setCameraFlashMode:type];
 }
 
 #pragma mark - 还原设置
@@ -135,7 +131,7 @@
     
     [_myCameraViewHandler fitViewSizeKeepRatio:YES];
     //开启美颜（美颜与闪光灯互斥）
-    [_myCameraViewHandler enableFaceBeautify:YES];
+    [_myCameraViewHandler enableFaceBeautify:NO];
     //开启闪光灯
     [_myCameraViewHandler setCameraFlashMode:AVCaptureFlashModeOff];
     
@@ -157,8 +153,12 @@
         __weak typeof(self) weakSelf = self;
         _navigationView.yxTakingPicNavigationViewBackBlock = ^{
           
-            UIViewController *lastVC = [[YXCategoryBaseManager instanceManager] yxRemoveVCByVCNameArr:@[@"YXSeparationVC"] currentVC:self animated:NO];
+            UIViewController *lastVC = [[YXCategoryBaseManager instanceManager] yxRemoveVCByVCNameArr:@[@"YXSeparationVC"] currentVC:weakSelf animated:NO];
             [lastVC.navigationController popViewControllerAnimated:YES];
+        };
+        _navigationView.yxTakingPicNavigationViewChangeFlashBlock = ^(BOOL boolOpen) {
+          
+            [weakSelf changeflashMethodByBoolOpen:boolOpen];
         };
         
         [_navigationView mas_makeConstraints:^(MASConstraintMaker *make) {

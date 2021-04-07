@@ -39,6 +39,9 @@
     
     sender.selected =! sender.selected;
     [self judgeFlashShowByBoolOpen:sender.selected];
+    if (self.yxTakingPicNavigationViewChangeFlashBlock) {
+        self.yxTakingPicNavigationViewChangeFlashBlock(sender.selected);
+    }
 }
 
 @end
