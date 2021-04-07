@@ -6,8 +6,6 @@
 //
 
 #import "YXTakingPicVC.h"
-#import <Masonry.h>
-#import "YXGPUImageUtils.h"
 #import "YXTakingPicNavigationView.h"
 #import "YXTakingPicUserMaskView.h"
 #import "YXTakingPicBottomView.h"
@@ -34,43 +32,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.navigationController.navigationBar.hidden = YES;
+    self.view.backgroundColor = [UIColor whiteColor];
     [self initView];
-}
-
-#pragma mark - 初始化视图
-- (void)initView {
-    
-    _glkView = [[GLKView alloc] initWithFrame:self.view.bounds];
-        
-    _myCameraViewHandler = [[CGECameraViewHandler alloc] initWithGLKView:_glkView];
-    
-    if ([_myCameraViewHandler setupCamera:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionFront isFrontCameraMirrored:YES authorizationFailed:^{}]) {
-        
-        [[_myCameraViewHandler cameraDevice] stopCameraCapture];
-    }
-    [[_myCameraViewHandler cameraDevice] removeAudioInputsAndOutputs];
-    
-    [self.view insertSubview:_glkView atIndex:0];
-    
-    [CGESharedGLContext globalSyncProcessingQueue:^{
-        
-        [CGESharedGLContext useGlobalGLContext];
-        void cgePrintGLInfo(void);
-        cgePrintGLInfo();
-    }];
-    
-    [_myCameraViewHandler fitViewSizeKeepRatio:YES];
-    //开启美颜（美颜与闪光灯互斥）
-    [_myCameraViewHandler enableFaceBeautify:YES];
-    //开启闪光灯
-    [_myCameraViewHandler setCameraFlashMode:AVCaptureFlashModeOff];
-    
-    [[_myCameraViewHandler cameraRecorder] setPictureHighResolution:YES];
-    cgeSetLoadImageCallback(loadImageCallback, loadImageOKCallback, nil);
-    [[_myCameraViewHandler cameraDevice] startCameraCapture];
-    
-    self.userMaskView.hidden = NO;
 }
 
 #pragma mark - 更改锚点、对焦
@@ -148,6 +111,42 @@
     [CGESharedGLContext clearGlobalGLContext];
 }
 
+#pragma mark - 初始化视图
+- (void)initView {
+    
+    _glkView = [[GLKView alloc] initWithFrame:self.view.bounds];
+        
+    _myCameraViewHandler = [[CGECameraViewHandler alloc] initWithGLKView:_glkView];
+    
+    if ([_myCameraViewHandler setupCamera:AVCaptureSessionPreset1280x720 cameraPosition:AVCaptureDevicePositionFront isFrontCameraMirrored:YES authorizationFailed:^{}]) {
+        
+        [[_myCameraViewHandler cameraDevice] stopCameraCapture];
+    }
+    [[_myCameraViewHandler cameraDevice] removeAudioInputsAndOutputs];
+    
+    [self.view insertSubview:_glkView atIndex:0];
+    
+    [CGESharedGLContext globalSyncProcessingQueue:^{
+        
+        [CGESharedGLContext useGlobalGLContext];
+        void cgePrintGLInfo(void);
+        cgePrintGLInfo();
+    }];
+    
+    [_myCameraViewHandler fitViewSizeKeepRatio:YES];
+    //开启美颜（美颜与闪光灯互斥）
+    [_myCameraViewHandler enableFaceBeautify:YES];
+    //开启闪光灯
+    [_myCameraViewHandler setCameraFlashMode:AVCaptureFlashModeOff];
+    
+    [[_myCameraViewHandler cameraRecorder] setPictureHighResolution:YES];
+    cgeSetLoadImageCallback(loadImageCallback, loadImageOKCallback, nil);
+    [[_myCameraViewHandler cameraDevice] startCameraCapture];
+    
+    self.userMaskView.hidden = NO;
+}
+
+
 #pragma mark - 懒加载
 - (YXTakingPicNavigationView *)navigationView {
     
@@ -158,7 +157,8 @@
         __weak typeof(self) weakSelf = self;
         _navigationView.yxTakingPicNavigationViewBackBlock = ^{
           
-            [weakSelf.navigationController popViewControllerAnimated:YES];
+            UIViewController *lastVC = [[YXCategoryBaseManager instanceManager] yxRemoveVCByVCNameArr:@[@"YXSeparationVC"] currentVC:self animated:NO];
+            [lastVC.navigationController popViewControllerAnimated:YES];
         };
         
         [_navigationView mas_makeConstraints:^(MASConstraintMaker *make) {

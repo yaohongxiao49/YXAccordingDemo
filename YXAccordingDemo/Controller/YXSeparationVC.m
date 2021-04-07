@@ -6,8 +6,6 @@
 //
 
 #import "YXSeparationVC.h"
-#import "RLHttpRequest.h"
-#import "HXPhotoPicker.h"
 #import "YXTakingPicVC.h"
 
 @interface YXSeparationVC ()
@@ -30,6 +28,7 @@
 - (void)baiduMethodByImgHTTP:(UIImage *)img {
     
     __weak typeof(self) weakSelf = self;
+    [SVProgressHUD showWithStatus:@"处理中，请稍后..."];
     [RLHttpRequest getBaiduAIAPIFaceFromImg:img showText:nil showSuccess:NO showError:NO finishBlock:^(id result, BOOL boolSuccess) {
        
         UIImage *compositionImg = [UIImage new];
@@ -56,6 +55,7 @@
         if (weakSelf.yxSeparationVCReturnImgBlock) {
             weakSelf.yxSeparationVCReturnImgBlock(compositionImg, weakSelf);
         }
+        [SVProgressHUD dismiss];
     }];
 }
 
@@ -69,29 +69,6 @@
     UIImageView *imgV = [[UIImageView alloc] initWithImage:compositionImg];
     imgV.center = self.view.center;
     [self.view addSubview:imgV];
-}
-
-#pragma mark - 移除指定的VC并返回最前的VC
-- (UIViewController *)removeVCByVCNameArr:(NSArray *)vcNameArr animated:(BOOL)animated {
-    
-    UINavigationController *naVC = self.navigationController;
-    NSMutableArray *vcArr = naVC.viewControllers.mutableCopy;
-    NSMutableIndexSet *deleteIndexs = [NSMutableIndexSet indexSet];
-    for (NSInteger i = 0; i < vcArr.count; ++i) {
-        UIViewController *vc = vcArr[i];
-        NSString *vcName = NSStringFromClass([vc class]);
-        if ([vcNameArr containsObject:vcName]) {
-            [deleteIndexs addIndex:i];
-        }
-    }
-    
-    if (deleteIndexs.count > 0) {
-        [vcArr removeObjectsAtIndexes:deleteIndexs];
-        [naVC setViewControllers:vcArr animated:animated];
-    }
-    
-    UIViewController *lastVC = [vcArr lastObject];
-    return lastVC;
 }
 
 #pragma mark - 跳转相册选择/图片编辑
@@ -125,7 +102,6 @@
             }
         } cancel:^(HX_PhotoEditViewController * _Nonnull viewController) {
             
-            [weakSelf.navigationController popViewControllerAnimated:YES];
         }];
     }
 }
@@ -141,14 +117,12 @@
         [weakSelf pushToPhotoEditOrAlbumByImg:nil];
     }
     else { //拍摄
-        
-        UIViewController *lastVC = [self removeVCByVCNameArr:@[@"YXSeparationVC"] animated:NO];
         YXTakingPicVC *vc = [[YXTakingPicVC alloc] init];
         vc.yxTakingPicVCReturnImgBlock = ^(UIImage * _Nonnull img) {
           
             [weakSelf pushToPhotoEditOrAlbumByImg:img];
         };
-        [lastVC.navigationController pushViewController:vc animated:YES];
+        [self.navigationController pushViewController:vc animated:YES];
     }
 }
 

@@ -18,6 +18,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.navigationController.navigationBar.hidden = YES;
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIButton *chooseBtn = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -56,18 +57,19 @@
     if (boolAlbum) { //相册
         vc.type = YXSeparationVCTypeAlbum;
     }
-    else {
+    else { //拍照
         vc.type = YXSeparationVCTypeTaking;
     }
     vc.yxSeparationVCReturnImgBlock = ^(UIImage * _Nonnull img, UIViewController * _Nonnull vc) {
         
-        [vc.navigationController popViewControllerAnimated:YES];
+        UIViewController *lastVC = [[YXCategoryBaseManager instanceManager] yxRemoveVCByVCNameArr:@[@"YXSeparationVC"] currentVC:vc animated:NO];
+        [lastVC.navigationController popViewControllerAnimated:YES];
         
         UIImageView *imgV = [[UIImageView alloc] initWithImage:img];
         imgV.center = weakSelf.view.center;
         [weakSelf.view addSubview:imgV];
     };
-    [self.navigationController pushViewController:vc animated:YES];
+    [self.navigationController pushViewController:vc animated:NO];
 }
 
 

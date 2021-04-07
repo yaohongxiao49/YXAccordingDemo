@@ -18,5 +18,11 @@
 #import "NSString+YXCategory.h"
 #import "NSMutableArray+YXCategory.h"
 #import "NSMutableDictionary+YXCategory.h"
+#import <HXPhotoPicker.h>
+#import <Masonry.h>
+#import <SVProgressHUD.h>
+#import "YXGPUImageUtils.h"
+
+#import "RLHttpRequest.h"
 
 #endif /* YXCategorysPCH_pch */
