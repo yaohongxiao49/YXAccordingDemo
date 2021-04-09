@@ -352,19 +352,80 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
 }
 
 #pragma mark - 根据颜色创建图片
-+ (UIImage *)yxCreateImgByColor:(UIColor *)color imgSize:(CGSize)imgSize {
++ (UIImage *)yxCreateImgByColorArr:(NSArray *)colorArr imgSize:(CGSize)imgSize directionType:(YXGradientDirectionType)directionType {
     
     CGRect rect = CGRectMake(0, 0, imgSize.width, imgSize.height);
     UIGraphicsBeginImageContext(imgSize);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    CGContextSetFillColorWithColor(context, [color CGColor]);
-    CGContextFillRect(context, rect);
+    if (colorArr.count > 1) {
+        [self yxDrawRadialGradient:context rect:rect startColor:[colorArr firstObject] endColor:[colorArr lastObject] directionType:directionType];
+    }
+    else {
+        CGContextSetFillColorWithColor(context, [[colorArr lastObject] CGColor]);
+        CGContextFillRect(context, rect);
+    }
     
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     return img;
+}
+
+#pragma mark - 渐变色
++ (void)yxDrawRadialGradient:(CGContextRef)context rect:(CGRect)rect startColor:(UIColor *)startColor endColor:(UIColor *)endColor directionType:(YXGradientDirectionType)directionType {
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, CGRectGetMinX(rect), CGRectGetMinY(rect));
+    CGPathAddLineToPoint(path, NULL, CGRectGetWidth(rect), CGRectGetMinY(rect));
+    CGPathAddLineToPoint(path, NULL, CGRectGetWidth(rect), CGRectGetMaxY(rect));
+    CGPathAddLineToPoint(path, NULL, CGRectGetMinX(rect), CGRectGetMaxY(rect));
+    CGPathCloseSubpath(path);
+    
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGFloat locations[] = {0.0, 1.0};
+
+    NSArray *colors = @[(__bridge id)startColor.CGColor, (__bridge id)endColor.CGColor];
+    
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
+    CGRect pathRect = CGPathGetBoundingBox(path);
+    
+    CGPoint startPoint = CGPointMake(CGRectGetMinX(pathRect), CGRectGetMidY(pathRect));
+    CGPoint endPoint = CGPointMake(CGRectGetMaxX(pathRect), CGRectGetMidY(pathRect));
+    switch (directionType) {
+        case YXGradientDirectionTypeTop: {
+            startPoint = CGPointMake(CGRectGetMidX(pathRect), CGRectGetMinY(pathRect));
+            endPoint = CGPointMake(CGRectGetMidX(pathRect), CGRectGetMaxY(pathRect));
+            break;
+        }
+        case YXGradientDirectionTypeBottom: {
+            startPoint = CGPointMake(CGRectGetMidX(pathRect), CGRectGetMaxY(pathRect));
+            endPoint = CGPointMake(CGRectGetMidX(pathRect), CGRectGetMinY(pathRect));
+            break;
+        }
+        case YXGradientDirectionTypeLeft: {
+            startPoint = CGPointMake(CGRectGetMinX(pathRect), CGRectGetMidY(pathRect));
+            endPoint = CGPointMake(CGRectGetMaxX(pathRect), CGRectGetMidY(pathRect));
+            break;
+        }
+        case YXGradientDirectionTypeRight: {
+            startPoint = CGPointMake(CGRectGetMaxX(pathRect), CGRectGetMidY(pathRect));
+            endPoint = CGPointMake(CGRectGetMinX(pathRect), CGRectGetMidY(pathRect));
+            break;
+        }
+        default:
+            break;
+    }
+    
+    CGContextSaveGState(context);
+    CGContextAddPath(context, path);
+    CGContextClip(context);
+    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    CGContextRestoreGState(context);
+    
+    CGGradientRelease(gradient);
+    CGColorSpaceRelease(colorSpace);
+    CGPathRelease(path);
 }
 
 #pragma mark - 动态拉伸图片

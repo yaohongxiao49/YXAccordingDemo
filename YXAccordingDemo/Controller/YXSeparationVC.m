@@ -47,7 +47,7 @@
             //背景图宽度
             CGFloat colorImgWidth = 100;
             CGFloat colorImgHeight = colorImgWidth /segmentationOriginalProportion;
-            UIImage *colorImg = [UIImage yxCreateImgByColor:[UIColor greenColor] imgSize:CGSizeMake(colorImgWidth, colorImgHeight)];
+            UIImage *colorImg = [UIImage yxCreateImgByColorArr:@[[UIColor greenColor], [UIColor redColor]] imgSize:CGSizeMake(colorImgWidth, colorImgHeight) directionType:YXGradientDirectionTypeRight];
             
             compositionImg = [UIImage yxComposeImgWithBgImgValue:colorImg bgImgFrame:CGRectMake(0, 0, colorImg.size.width, colorImg.size.height) topImgValue:segmentationImg topImgFrame:CGRectMake(0, 0, colorImgWidth, colorImgHeight) saveToFileWithName:@"" boolByBgView:YES];
         }
@@ -63,7 +63,7 @@
 - (void)homemadeMethod {
     
     UIImage *segmentationImg = [UIImage yxRemoveColorByColorType:NO segmentationImg:[UIImage imageNamed:@"YXSegmentationImg"]];
-    UIImage *colorImg = [UIImage yxCreateImgByColor:[UIColor greenColor] imgSize:CGSizeMake(200, 200)];
+    UIImage *colorImg = [UIImage yxCreateImgByColorArr:@[[UIColor greenColor], [UIColor redColor]] imgSize:CGSizeMake(200, 200) directionType:YXGradientDirectionTypeTop];
     UIImage *compositionImg = [UIImage yxComposeImgWithBgImgValue:colorImg bgImgFrame:CGRectMake(0, 0, colorImg.size.width, colorImg.size.height) topImgValue:segmentationImg topImgFrame:CGRectMake((colorImg.size.width - segmentationImg.size.width) /2, (colorImg.size.height - segmentationImg.size.height) /2, segmentationImg.size.width, segmentationImg.size.height) saveToFileWithName:@"" boolByBgView:YES];
     
     UIImageView *imgV = [[UIImageView alloc] initWithImage:compositionImg];

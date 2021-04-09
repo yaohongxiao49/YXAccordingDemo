@@ -18,6 +18,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/** 渐变色方向枚举 */
+typedef NS_ENUM(NSUInteger, YXGradientDirectionType) {
+    /** 上启 */
+    YXGradientDirectionTypeTop,
+    /** 下启 */
+    YXGradientDirectionTypeBottom,
+    /** 左启 */
+    YXGradientDirectionTypeLeft,
+    /** 右启 */
+    YXGradientDirectionTypeRight,
+};
+
 @interface UIImage (YXCategory)
 
 /**
@@ -86,11 +98,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 根据颜色创建图片
- * @param color 颜色
+ * @param colorArr 颜色集合
  * @param imgSize 尺寸
+ * @param directionType 方向
  */
-+ (UIImage *)yxCreateImgByColor:(UIColor *)color
-                        imgSize:(CGSize)imgSize;
++ (UIImage *)yxCreateImgByColorArr:(NSArray *)colorArr
+                           imgSize:(CGSize)imgSize
+                     directionType:(YXGradientDirectionType)directionType;
+
+/**
+ * 设置渐变色
+ * @param context 画布上下文
+ * @param rect 尺寸
+ * @param startColor 起始色值
+ * @param endColor 结束色值
+ * @param directionType 方向
+ */
++ (void)yxDrawRadialGradient:(CGContextRef)context
+                        rect:(CGRect)rect
+                  startColor:(UIColor *)startColor
+                    endColor:(UIColor *)endColor
+               directionType:(YXGradientDirectionType)directionType;
 
 /**
  * 动态拉伸图片（默认所表示的方位数值为图片的数值）
