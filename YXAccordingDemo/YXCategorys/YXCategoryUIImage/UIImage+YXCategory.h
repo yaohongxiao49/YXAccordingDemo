@@ -121,6 +121,13 @@ typedef NS_ENUM(NSUInteger, YXGradientDirectionType) {
                directionType:(YXGradientDirectionType)directionType;
 
 /**
+ * 人脸位置检测，并裁剪包含五官的人脸
+ * @param img 包含人脸的图片
+ */
++ (void)yxDetectingAndCuttingFaceByImg:(UIImage *)img
+                              finished:(void(^)(BOOL success, UIImage *img))finished;
+
+/**
  * 动态拉伸图片（默认所表示的方位数值为图片的数值）
  * @param imgName 图片名
  * @param tensileTop 顶部数值

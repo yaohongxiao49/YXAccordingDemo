@@ -428,6 +428,45 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
     CGPathRelease(path);
 }
 
+#pragma mark - 人脸位置检测，并裁剪包含五官的人脸
++ (void)yxDetectingAndCuttingFaceByImg:(UIImage *)img finished:(void(^)(BOOL success, UIImage *img))finished {
+    
+    if (img) {
+        CIImage *cgImg = [[CIImage alloc] initWithImage:img];
+        CIContext *context = [CIContext contextWithOptions:nil];
+        CIDetector *faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:context options:@{CIDetectorAccuracy:CIDetectorAccuracyHigh}];
+        //检测到的人脸数组
+        NSArray *faceArr = [faceDetector featuresInImage:cgImg];
+        if (faceArr.count > 0) {
+            //检测到人脸时获取最后一次监测到的人脸
+            CIFeature *faceFeature = [faceArr lastObject];
+            CGRect faceBounds = faceFeature.bounds;
+            //cgImage计算的尺寸是像素，需要与空间的尺寸做个计算
+            //下面几句是为了获取到额头部位做的处理，如果只需要定位到五官可直接取faceBounds的值
+            //屏幕尺寸换算原图元素尺寸比例（以宽高比为3：5设置）
+            CGFloat faceProportionWidth = faceBounds.size.width * 1.2;
+            CGFloat faceProportionHeight = faceProportionWidth / 3 * 5;
+            CGFloat faceOffsetX = faceBounds.origin.x - faceProportionWidth / 12;
+            CGFloat faceOffsetY = faceBounds.origin.y - faceProportionHeight / (12 - 1);
+            faceBounds.origin.x = faceOffsetX;
+            faceBounds.origin.y = faceOffsetY;
+            faceBounds.size.width = faceProportionWidth;
+            faceBounds.size.height = faceProportionHeight;
+            //这种裁剪方法不会出现脸部裁剪不到的情况，但是会裁剪到脖子的位置
+            CIImage *faceImg = [cgImg imageByCroppingToRect:faceBounds];
+            UIImage *resultImg = [UIImage imageWithCGImage:[context createCGImage:faceImg fromRect:faceImg.extent]];
+            
+            finished(YES, resultImg);
+        }
+        else {
+            finished(NO, nil);
+        }
+    }
+    else {
+        finished(NO, nil);
+    }
+}
+
 #pragma mark - 动态拉伸图片
 + (UIImage *)yxGetTensileImgByImgName:(NSString *)imgName tensileTop:(NSString *)tensileTop tensileLeft:(NSString *)tensileLeft tensileBottom:(NSString *)tensileBottom tensileRight:(NSString *)tensileRight {
     
