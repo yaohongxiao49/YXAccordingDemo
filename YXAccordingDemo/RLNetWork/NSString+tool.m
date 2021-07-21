@@ -16,7 +16,7 @@
 - (NSString *)URLDecodedString {
     return [self stringByRemovingPercentEncoding];
 }
-- (NSString *)urlEncodeStr:(NSString *)input {
++ (NSString *)urlEncodeStr:(NSString *)input {
     
     return [input stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@"?!@#$^&%*+,:;='\"`<>()[]{}/\\| "] invertedSet]];
 }

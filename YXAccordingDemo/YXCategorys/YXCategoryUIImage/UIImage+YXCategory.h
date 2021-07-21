@@ -125,7 +125,9 @@ typedef NS_ENUM(NSUInteger, YXGradientDirectionType) {
  * @param img 包含人脸的图片
  */
 + (void)yxDetectingAndCuttingFaceByImg:(UIImage *)img
+                          boolAccurate:(BOOL)boolAccurate
                               finished:(void(^)(BOOL success, UIImage *img))finished;
+
 
 /**
  * 动态拉伸图片（默认所表示的方位数值为图片的数值）
@@ -140,6 +142,9 @@ typedef NS_ENUM(NSUInteger, YXGradientDirectionType) {
                           tensileLeft:(NSString *__nullable)tensileLeft
                         tensileBottom:(NSString *__nullable)tensileBottom
                          tensileRight:(NSString *__nullable)tensileRight;
+
+/** 更改照片方向 */
+- (UIImage *)fixOrientation:(UIImageOrientation)orientation;
 
 /**
  * 使用CoreImage，分离图片并与指定背景图片合成一张图片（分离图片需要纯色背景，不含黑白灰）

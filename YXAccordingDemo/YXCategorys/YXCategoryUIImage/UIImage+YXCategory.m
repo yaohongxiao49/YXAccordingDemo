@@ -5,6 +5,7 @@
 //  Created by ios on 2020/4/8.
 //  Copyright © 2020 August. All rights reserved.
 //
+//TODO hue值网址 http://www.color-blindness.com/color-name-hue/
 
 #import "UIImage+YXCategory.h"
 #import <sys/utsname.h>
@@ -429,7 +430,7 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
 }
 
 #pragma mark - 人脸位置检测，并裁剪包含五官的人脸
-+ (void)yxDetectingAndCuttingFaceByImg:(UIImage *)img finished:(void(^)(BOOL success, UIImage *img))finished {
++ (void)yxDetectingAndCuttingFaceByImg:(UIImage *)img boolAccurate:(BOOL)boolAccurate finished:(void(^)(BOOL success, UIImage *img))finished {
     
     if (img) {
         CIImage *cgImg = [[CIImage alloc] initWithImage:img];
@@ -452,9 +453,19 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
             faceBounds.origin.y = faceOffsetY;
             faceBounds.size.width = faceProportionWidth;
             faceBounds.size.height = faceProportionHeight;
-            //这种裁剪方法不会出现脸部裁剪不到的情况，但是会裁剪到脖子的位置
-            CIImage *faceImg = [cgImg imageByCroppingToRect:faceBounds];
-            UIImage *resultImg = [UIImage imageWithCGImage:[context createCGImage:faceImg fromRect:faceImg.extent]];
+            
+            UIImage *resultImg;
+            //这种裁剪方法在低头时和抬头时会截取不到完整的脸部，但是可以定位全脸位置更精确
+            if (boolAccurate) {
+                CGImageRef cgImage = CGImageCreateWithImageInRect(img.CGImage, faceBounds);
+                resultImg = [UIImage imageWithCGImage:cgImage];
+                CGImageRelease(cgImage);
+            }
+            else {
+                //这种裁剪方法不会出现脸部裁剪不到的情况，但是会裁剪到脖子的位置
+                CIImage *faceImg = [cgImg imageByCroppingToRect:faceBounds];
+                resultImg = [UIImage imageWithCGImage:[context createCGImage:faceImg fromRect:faceImg.extent]];
+            }
             
             finished(YES, resultImg);
         }
@@ -503,6 +514,73 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
     return newImage;
 }
 
+#pragma mark - 更改照片方向
+- (UIImage *)fixOrientation:(UIImageOrientation)orientation {
+
+    UIImageOrientation imgOrientation = orientation == UIImageOrientationUp ? self.imageOrientation : orientation;
+    if (imgOrientation == UIImageOrientationUp) {
+        return self;
+    }
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    switch (imgOrientation) {
+        case UIImageOrientationDown:
+        case UIImageOrientationDownMirrored: {
+            transform = CGAffineTransformTranslate(transform, self.size.width, self.size.height);
+            transform = CGAffineTransformRotate(transform, M_PI);
+            break;
+        }
+        case UIImageOrientationLeft:
+        case UIImageOrientationLeftMirrored: {
+            transform = CGAffineTransformTranslate(transform, self.size.width, 0);
+            transform = CGAffineTransformRotate(transform, M_PI_2);
+            break;
+        }
+        case UIImageOrientationRight:
+        case UIImageOrientationRightMirrored: {
+            transform = CGAffineTransformTranslate(transform, 0, self.size.height);
+            transform = CGAffineTransformRotate(transform, -M_PI_2);
+            break;
+        }
+        default:
+            break;
+    }
+    switch (imgOrientation) {
+        case UIImageOrientationUpMirrored:
+        case UIImageOrientationDownMirrored: {
+            transform = CGAffineTransformTranslate(transform, self.size.width, 0);
+            transform = CGAffineTransformScale(transform, -1, 1);
+            break;
+        }
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRightMirrored:
+            transform = CGAffineTransformTranslate(transform, self.size.height, 0);
+            transform = CGAffineTransformScale(transform, -1, 1);
+            break;
+        default:
+            break;
+    }
+    
+    CGContextRef ctx = CGBitmapContextCreate(NULL, self.size.width, self.size.height, CGImageGetBitsPerComponent(self.CGImage), 0, CGImageGetColorSpace(self.CGImage), CGImageGetBitmapInfo(self.CGImage));
+    CGContextConcatCTM(ctx, transform);
+    
+    switch(imgOrientation) {
+        case UIImageOrientationLeft:
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRight:
+        case UIImageOrientationRightMirrored:
+            CGContextDrawImage(ctx, CGRectMake(0, 0, self.size.height, self.size.width), self.CGImage);
+            break;
+        default:
+            CGContextDrawImage(ctx, CGRectMake(0, 0, self.size.width, self.size.height), self.CGImage);
+            break;
+    }
+    CGImageRef cgimg = CGBitmapContextCreateImage(ctx);
+    UIImage *endImg = [UIImage imageWithCGImage:cgimg];
+    CGContextRelease(ctx);
+    CGImageRelease(cgimg);
+    return endImg;
+}
+
 #pragma mark - 使用CoreImage，分离图片并与指定背景图片合成一张图片（分离图片需要纯色背景）
 + (UIImage *)yxSegmentationAndCompositionImgBySegmentationImg:(UIImage *)segmentationImg bgImg:(UIImage *)bgImg {
     
@@ -528,7 +606,7 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
                 //You can find publicly available rgbToHSV functions on the Internet
                 yxRGBToHSV(rgb[0], rgb[1], rgb[2], &hsv[0], &hsv[1], &hsv[2]);
                 //颜色判断
-                float alpha = (hsv[0] >= 50 && hsv[0] <= 170) ? 0.0f : 1.0f;
+                float alpha = (hsv[0] >= 50 && hsv[0] <= 170) ? 0.0f : 1.0f; //绿色
                 //饱和度
                 if (hsv[1] < 0.2) {
                     alpha = 1.0f;

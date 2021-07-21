@@ -12,6 +12,6 @@
 
 - (NSString *)URLEncodedString;
 - (NSString *)URLDecodedString;
-- (NSString *)urlEncodeStr:(NSString *)input;
++ (NSString *)urlEncodeStr:(NSString *)input;
 
 @end
