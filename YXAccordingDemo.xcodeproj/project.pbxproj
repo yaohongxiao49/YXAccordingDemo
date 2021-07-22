@@ -47,6 +47,8 @@
 		8484C95426A80AF6001E9193 /* YXFaceRecognitionBaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8484C94D26A80AF6001E9193 /* YXFaceRecognitionBaseModel.m */; };
 		8484C95526A80AF6001E9193 /* YXFaceRecognitionMsgModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8484C94E26A80AF6001E9193 /* YXFaceRecognitionMsgModel.m */; };
 		8484C95626A80AF6001E9193 /* YXFaceRecognitionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 8484C95326A80AF6001E9193 /* YXFaceRecognitionVC.m */; };
+		84FE852926A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FE852826A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m */; };
+		84FE853326A9397A00B5968E /* YXFaceRecognitionAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FE853226A9397A00B5968E /* YXFaceRecognitionAnimationView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +141,10 @@
 		8484C95026A80AF6001E9193 /* YXFaceRecognitionBaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionBaseModel.h; sourceTree = "<group>"; };
 		8484C95226A80AF6001E9193 /* YXFaceRecognitionVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionVC.h; sourceTree = "<group>"; };
 		8484C95326A80AF6001E9193 /* YXFaceRecognitionVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YXFaceRecognitionVC.m; sourceTree = "<group>"; };
+		84FE852726A90E7E00B5968E /* YXFaceRecognitionAnimationVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionAnimationVC.h; sourceTree = "<group>"; };
+		84FE852826A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YXFaceRecognitionAnimationVC.m; sourceTree = "<group>"; };
+		84FE853126A9397A00B5968E /* YXFaceRecognitionAnimationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionAnimationView.h; sourceTree = "<group>"; };
+		84FE853226A9397A00B5968E /* YXFaceRecognitionAnimationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YXFaceRecognitionAnimationView.m; sourceTree = "<group>"; };
 		93F9FFDE60227E1F02ABA8BF /* Pods-YXAccordingDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YXAccordingDemo.release.xcconfig"; path = "Target Support Files/Pods-YXAccordingDemo/Pods-YXAccordingDemo.release.xcconfig"; sourceTree = "<group>"; };
 		C2ABF4005DD5B2EA3843AB7F /* libPods-YXAccordingDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YXAccordingDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -408,8 +414,9 @@
 		8484C93A26A7BC22001E9193 /* YXFaceRecognitionVC */ = {
 			isa = PBXGroup;
 			children = (
-				8484C94C26A80AF6001E9193 /* Model */,
 				8484C95126A80AF6001E9193 /* VC */,
+				84FE853026A9396500B5968E /* View */,
+				8484C94C26A80AF6001E9193 /* Model */,
 			);
 			path = YXFaceRecognitionVC;
 			sourceTree = "<group>";
@@ -430,8 +437,19 @@
 			children = (
 				8484C95226A80AF6001E9193 /* YXFaceRecognitionVC.h */,
 				8484C95326A80AF6001E9193 /* YXFaceRecognitionVC.m */,
+				84FE852726A90E7E00B5968E /* YXFaceRecognitionAnimationVC.h */,
+				84FE852826A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m */,
 			);
 			path = VC;
+			sourceTree = "<group>";
+		};
+		84FE853026A9396500B5968E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84FE853126A9397A00B5968E /* YXFaceRecognitionAnimationView.h */,
+				84FE853226A9397A00B5968E /* YXFaceRecognitionAnimationView.m */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -614,6 +632,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84FE852926A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m in Sources */,
 				8463B221261C621100A9A27B /* YXGPUImageUtils.m in Sources */,
 				8463B22D261C621100A9A27B /* RLHttpRequest.m in Sources */,
 				8484C93D26A7BC22001E9193 /* YXTakingPicBottomView.m in Sources */,
@@ -639,6 +658,7 @@
 				8484C93F26A7BC22001E9193 /* YXTakingPicNavigationView.m in Sources */,
 				8484C94026A7BC22001E9193 /* YXTakingPicUserMaskView.m in Sources */,
 				8484C95526A80AF6001E9193 /* YXFaceRecognitionMsgModel.m in Sources */,
+				84FE853326A9397A00B5968E /* YXFaceRecognitionAnimationView.m in Sources */,
 				8463B234261C621100A9A27B /* UIColor+YXCategory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

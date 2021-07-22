@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger faceNum;
 /** 人脸信息列表 */
 @property (nonatomic, copy) NSArray <YXFaceRecognitionMsgModel *>*faceList;
+/** json字符串 */
+@property (nonatomic, copy) NSString *jsonStr;
 
 - (instancetype)initWithDic:(NSDictionary *)dic;
 

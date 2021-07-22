@@ -444,11 +444,11 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
             CGRect faceBounds = faceFeature.bounds;
             //cgImage计算的尺寸是像素，需要与空间的尺寸做个计算
             //下面几句是为了获取到额头部位做的处理，如果只需要定位到五官可直接取faceBounds的值
-            //屏幕尺寸换算原图元素尺寸比例（以宽高比为3：5设置）
-            CGFloat faceProportionWidth = faceBounds.size.width * 1.2;
-            CGFloat faceProportionHeight = faceProportionWidth / 3 * 5;
-            CGFloat faceOffsetX = faceBounds.origin.x - faceProportionWidth / 12;
-            CGFloat faceOffsetY = faceBounds.origin.y - faceProportionHeight / (12 - 1);
+            //屏幕尺寸换算原图元素尺寸比例（以宽高比为3：4设置）
+            CGFloat faceProportionWidth = faceBounds.size.width * 1.4;
+            CGFloat faceProportionHeight = faceProportionWidth / 3 * 4;
+            CGFloat faceOffsetX = faceBounds.origin.x - (faceProportionWidth / 6);
+            CGFloat faceOffsetY = boolAccurate ? faceBounds.size.height - (faceBounds.origin.y - (faceProportionHeight / 4)) : faceBounds.origin.y - (faceProportionHeight / 8);
             faceBounds.origin.x = faceOffsetX;
             faceBounds.origin.y = faceOffsetY;
             faceBounds.size.width = faceProportionWidth;

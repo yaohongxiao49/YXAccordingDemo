@@ -6,6 +6,7 @@
 //
 
 #import "YXFaceRecognitionBaseModel.h"
+//#import "NSString+YXCategory.h"
 
 @implementation YXFaceRecognitionBaseModel
 
@@ -15,6 +16,7 @@
     if (self) {
         _faceNum = [[dic objectForKey:@"face_num"] integerValue];
         _faceList = [YXFaceRecognitionMsgModel arrayOfModelsFromDictionaries:[dic objectForKey:@"face_list"]];
+        _jsonStr = [NSString yxConvertToJsonDataByData:dic];
     }
     return self;
 }

@@ -32,6 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 /** 皮肤健康检测 */
 @property (nonatomic, copy) YXFaceRecognitionMsgSkinfaceModel *skinface;
 
+#pragma mark - 数据传递时使用
+/** 拍摄原图 */
+@property (nonatomic, strong) UIImage *originalImg;
+/** 截取后图片 */
+@property (nonatomic, strong) UIImage *interceptionImg;
+
 + (NSMutableArray *)arrayOfModelsFromDictionaries:(NSArray *)arr;
 - (instancetype)initWithDic:(NSDictionary *)dic;
 

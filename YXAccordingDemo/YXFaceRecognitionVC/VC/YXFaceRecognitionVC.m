@@ -6,6 +6,7 @@
 //
 
 #import "YXFaceRecognitionVC.h"
+#import "YXFaceRecognitionAnimationVC.h"
 
 @interface YXFaceRecognitionVC () <AVCapturePhotoCaptureDelegate>
 
@@ -18,9 +19,6 @@
 @property (nonatomic, copy) NSArray *devices;
 
 @property (nonatomic, strong) UIButton *takingPicBtn;
-@property (nonatomic, strong) UIImageView *imgView;
-
-@property (nonatomic, assign) BOOL boolBaidu;
 
 @end
 
@@ -30,49 +28,34 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _boolBaidu = YES;
-    
     [self initView];
 }
 
 #pragma mark - 使用百度还是CIDetector
-- (void)useMethodByImg:(UIImage *)img {
+- (void)useMethodByOriginalImg:(UIImage *)originalImg {
     
-    if (_boolBaidu) {
-        __weak typeof(self) weakSelf = self;
-        [RLHttpRequest getBaiduAIAPISkinAnalysisFromImg:img showText:nil showSuccess:NO showError:NO finishBlock:^(YXFaceRecognitionBaseModel *model, BOOL boolSuccess) {
+    __weak typeof(self) weakSelf = self;
+    [SVProgressHUD showWithStatus:@"分析中，请稍后..."];
+    [RLHttpRequest getBaiduAIAPISkinAnalysisFromImg:originalImg showText:nil showSuccess:NO showError:NO finishBlock:^(YXFaceRecognitionBaseModel *model, BOOL boolSuccess) {
+        
+        if (boolSuccess) {
+            YXFaceRecognitionMsgModel *msgModel = model.faceList[0];
+            YXFaceRecognitionMsgLocationModel *loactionModel = msgModel.location;
             
-            if (boolSuccess) {
-                YXFaceRecognitionMsgModel *msgModel = model.faceList[0];
-                YXFaceRecognitionMsgLocationModel *loactionModel = msgModel.location;
-                
-                [weakSelf tailoringImgByImg:img location:loactionModel finished:^(BOOL success, UIImage *img) {
-                    
-                    if (success) {
-                        weakSelf.imgView.image = img;
-                        weakSelf.imgView.hidden = NO;
-                    }
-                }];
-                NSLog(@"baidu成功了！");
-            }
-            else {
-                NSLog(@"baidu失败了！");
-            }
-        }];
-    }
-    else {
-        [UIImage yxDetectingAndCuttingFaceByImg:img boolAccurate:NO finished:^(BOOL success, UIImage * _Nonnull img) {
-          
-            if (success) {
-                self.imgView.image = img;
-                self.imgView.hidden = NO;
-                NSLog(@"成功了！");
-            }
-            else {
-                NSLog(@"失败了！");
-            }
-        }];
-    }
+            [weakSelf tailoringImgByImg:originalImg location:loactionModel finished:^(BOOL success, UIImage *img) {
+            
+                msgModel.originalImg = originalImg;
+                msgModel.interceptionImg = img;
+                if (success) {
+                    [weakSelf pushToAnimationVCByModel:model];
+                }
+                [SVProgressHUD dismiss];
+            }];
+        }
+        else {
+            [SVProgressHUD dismiss];
+        }
+    }];
 }
 
 #pragma mark - 裁剪图片
@@ -81,28 +64,29 @@
     CGRect faceBounds = CGRectMake(location.left, location.top, location.width, location.height);
     //cgImage计算的尺寸是像素，需要与空间的尺寸做个计算
     //下面几句是为了获取到额头部位做的处理，如果只需要定位到五官可直接取faceBounds的值
-    //屏幕尺寸换算原图元素尺寸比例（以宽高比为3：5设置）
+    //屏幕尺寸换算原图元素尺寸比例（以宽高比为3：4设置）
     CGFloat faceProportionWidth = faceBounds.size.width * 1.4;
-    CGFloat faceProportionHeight = faceProportionWidth / 3 * 5;
-    CGFloat faceOffsetX = faceBounds.origin.x - faceProportionWidth / 10;
-    CGFloat faceOffsetY = faceBounds.origin.y - faceProportionHeight / 3;
+    CGFloat faceProportionHeight = faceProportionWidth / 3 * 4;
+    CGFloat faceOffsetX = faceBounds.origin.x - (faceProportionWidth / 6);
+    CGFloat faceOffsetY = faceBounds.origin.y - (faceProportionHeight / 3);
     faceBounds.origin.x = faceOffsetX;
     faceBounds.origin.y = faceOffsetY;
     faceBounds.size.width = faceProportionWidth;
     faceBounds.size.height = faceProportionHeight;
     
-    //这种裁剪方法在低头时和抬头时会截取不到完整的脸部，但是可以定位全脸位置更精确
     CGImageRef cgImage = CGImageCreateWithImageInRect(img.CGImage, faceBounds);
     UIImage *resultImg = [UIImage imageWithCGImage:cgImage];
     CGImageRelease(cgImage);
     
-//    //这种裁剪方法不会出现脸部裁剪不到的情况，但是会裁剪到脖子的位置
-//    CIImage *cgImg = [[CIImage alloc] initWithImage:img];
-//    CIContext *context = [CIContext contextWithOptions:nil];
-//    CIImage *faceImg = [cgImg imageByCroppingToRect:faceBounds];
-//    UIImage *resultImg = [UIImage imageWithCGImage:[context createCGImage:faceImg fromRect:faceImg.extent]];
-    
     finished(YES, resultImg);
+}
+
+#pragma mark - 跳转至动画页
+- (void)pushToAnimationVCByModel:(YXFaceRecognitionBaseModel *)model {
+    
+    YXFaceRecognitionAnimationVC *vc = [[YXFaceRecognitionAnimationVC alloc] init];
+    vc.model = model;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - 开启
@@ -142,19 +126,13 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark - progress
-- (void)progressImgView {
-    
-    self.imgView.hidden = YES;
-}
-
 #pragma mark - <AVCapturePhotoCaptureDelegate>
 - (void)captureOutput:(AVCapturePhotoOutput *)captureOutput didFinishProcessingPhotoSampleBuffer:(nullable CMSampleBufferRef)photoSampleBuffer previewPhotoSampleBuffer:(nullable CMSampleBufferRef)previewPhotoSampleBuffer resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings bracketSettings:(nullable AVCaptureBracketedStillImageSettings *)bracketSettings error:(nullable NSError *)error {
     
     NSData *data = [AVCapturePhotoOutput JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer previewPhotoSampleBuffer:previewPhotoSampleBuffer];
     UIImage *img = _device.position == AVCaptureDevicePositionBack ? [UIImage imageWithData:data] : [[UIImage imageWithData:data] fixOrientation:UIImageOrientationLeftMirrored];
     
-    [self useMethodByImg:img];
+    [self useMethodByOriginalImg:img];
 }
 
 #pragma mark - 初始化视图
@@ -199,7 +177,6 @@
     [_session startRunning];
     
     self.takingPicBtn.hidden = NO;
-    self.imgView.hidden = YES;
 }
 
 #pragma mark - 懒加载
@@ -207,26 +184,14 @@
     
     if (!_takingPicBtn) {
         _takingPicBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _takingPicBtn.frame = CGRectMake(100, 400, 100, 100);
+        _takingPicBtn.frame = CGRectMake(100, self.view.height - 200, 100, 100);
+        _takingPicBtn.centerX = self.view.centerX;
+        [_takingPicBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
         [_takingPicBtn setTitle:@"拍照" forState:UIControlStateNormal];
         [_takingPicBtn addTarget:self action:@selector(progressTakingPic) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_takingPicBtn];
     }
     return _takingPicBtn;
-}
-- (UIImageView *)imgView {
-    
-    if (!_imgView) {
-        _imgView = [[UIImageView alloc] init];
-        _imgView.frame = self.view.bounds;
-        _imgView.userInteractionEnabled = YES;
-        _imgView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.view addSubview:_imgView];
-        
-        UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(progressImgView)];
-        [_imgView addGestureRecognizer:gesture];
-    }
-    return _imgView;
 }
 
 @end
