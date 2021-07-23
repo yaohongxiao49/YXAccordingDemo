@@ -7,12 +7,14 @@
 
 #import "YXFaceRecognitionAnimationVC.h"
 #import "YXFaceRecognitionAnimationView.h"
+#import "YXFaceRecognitionResultVC.h"
 
 @interface YXFaceRecognitionAnimationVC ()
 
 @property (nonatomic, strong) UIImageView *imgV;
-@property (nonatomic, strong) UIButton *proportionBtn;
 @property (nonatomic, strong) YXFaceRecognitionAnimationView *animationView;
+
+@property (nonatomic, strong) YXFaceRecognitionBaseModel *model;
 @property (nonatomic, strong) YXFaceRecognitionMsgModel *msgModel;
 
 @end
@@ -23,25 +25,75 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _msgModel = self.model.faceList[0];
-    self.imgV.image = _msgModel.originalImg;
+    self.view.backgroundColor = [UIColor whiteColor];
     
-    self.proportionBtn.hidden = NO;
-    self.animationView.hidden = NO;
+    [self initView];
+    [self getBaiduAIFaceHTTP];
 }
 
-#pragma mark - progress
-- (void)progressProportionBtn:(UIButton *)sender {
+#pragma mark - 开启动画、获取百度ai面容皮肤分析
+- (void)getBaiduAIFaceHTTP {
     
-    sender.selected =! sender.selected;
-    if (sender.selected) {
-        self.imgV.contentMode = UIViewContentModeScaleAspectFit;
-        self.imgV.image = _msgModel.interceptionImg;
+    [self.animationView begainAnimation];
+    __weak typeof(self) weakSelf = self;
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_group_async(group, queue, ^{
+        
+        [weakSelf beginAnimationByGroup:group];
+    });
+    dispatch_group_async(group, queue, ^{
+    
+        [weakSelf beginBaiduAISkinAnalysisByGroup:group];
+    });
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        
+        weakSelf.animationView.boolEndAnimation = YES;
+        [weakSelf pushToResultVC];
+    });
+}
+
+#pragma mark - 开启动画
+- (void)beginAnimationByGroup:(dispatch_group_t)group {
+    
+    dispatch_group_enter(group);
+    self.animationView.yxFaceRecognitionAVBlock = ^(BOOL boolFinished) {
+        
+        dispatch_group_leave(group);
+    };
+}
+
+#pragma mark - 开启百度皮肤分析
+- (void)beginBaiduAISkinAnalysisByGroup:(dispatch_group_t)group {
+    
+    __weak typeof(self) weakSelf = self;
+    dispatch_group_enter(group);
+    [RLHttpRequest getBaiduAIAPISkinAnalysisFromImg:self.originalImg showText:nil showSuccess:NO showError:NO finishBlock:^(YXFaceRecognitionBaseModel *model, BOOL boolSuccess) {
+        
+        weakSelf.model = model;
+        weakSelf.model.originalImg = weakSelf.originalImg;
+        dispatch_group_leave(group);
+    }];
+}
+
+#pragma mark - 跳转至结果页
+- (void)pushToResultVC {
+    
+    if (_model == nil) {
+        [SVProgressHUD showErrorWithStatus:@"分析失败，请重新拍照！"];
+        [self.navigationController popViewControllerAnimated:YES];
     }
     else {
-        self.imgV.contentMode = UIViewContentModeScaleAspectFill;
-        self.imgV.image = _msgModel.originalImg;
+        YXFaceRecognitionResultVC *vc = [[YXFaceRecognitionResultVC alloc] init];
+        vc.model = _model;
+        [self.navigationController pushViewController:vc animated:YES];
     }
+}
+
+#pragma mark - 初始化视图
+- (void)initView {
+    
+    self.imgV.image = self.originalImg;
 }
 
 #pragma mark - 懒加载
@@ -54,19 +106,6 @@
         [self.view addSubview:_imgV];
     }
     return _imgV;
-}
-- (UIButton *)proportionBtn {
-    
-    if (!_proportionBtn) {
-        _proportionBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _proportionBtn.frame = CGRectMake(100, self.view.height - 200, 100, 100);
-        _proportionBtn.centerX = self.view.centerX;
-        [_proportionBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-        [_proportionBtn setTitle:@"切换" forState:UIControlStateNormal];
-        [_proportionBtn addTarget:self action:@selector(progressProportionBtn:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:_proportionBtn];
-    }
-    return _proportionBtn;
 }
 - (YXFaceRecognitionAnimationView *)animationView {
     

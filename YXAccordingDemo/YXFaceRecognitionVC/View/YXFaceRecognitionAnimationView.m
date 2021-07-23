@@ -46,6 +46,29 @@
             weakSelf.animationTag++;
             [weakSelf begainAnimation];
         }
+        else {
+            [weakSelf endViewAnimation];
+            if (weakSelf.yxFaceRecognitionAVBlock) {
+                weakSelf.yxFaceRecognitionAVBlock(YES);
+            }
+        }
+    }];
+}
+
+#pragma mark - 末尾动画持续
+- (void)endViewAnimation {
+    
+    UILabel *animationLab = (UILabel *)[_animationLabArr lastObject];
+    
+    __weak typeof(self) weakSelf = self;
+    CGFloat time = kFaceAnimationTime /(CGFloat)_animationLabArr.count;
+    [UIView animateWithDuration:time delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
+        
+        [animationLab sizeToFit];
+    } completion:^(BOOL finished) {
+        
+        animationLab.width = 0;
+        if (!weakSelf.boolEndAnimation) [weakSelf endViewAnimation];
     }];
 }
 
@@ -57,7 +80,7 @@
     NSInteger i = 0;
     for (NSString *value in self.valueArr) {
         UILabel *titleLab = [[UILabel alloc] initWithFrame:CGRectMake(15, 15 + i *(30 + 15), 100, 30)];
-        titleLab.textColor = [UIColor blackColor];
+        titleLab.textColor = [UIColor greenColor];
         titleLab.textAlignment = NSTextAlignmentLeft;
         titleLab.font = [UIFont systemFontOfSize:14];
         titleLab.alpha = 0;
@@ -66,7 +89,7 @@
         [self addSubview:titleLab];
         
         UILabel *pointLab = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleLab.frame) + 5, CGRectGetMinY(titleLab.frame), 0, CGRectGetHeight(titleLab.frame))];
-        pointLab.textColor = [UIColor blackColor];
+        pointLab.textColor = [UIColor greenColor];
         pointLab.textAlignment = NSTextAlignmentLeft;
         pointLab.font = [UIFont systemFontOfSize:14];
         pointLab.text = @". . .";
@@ -77,8 +100,6 @@
         
         i++;
     }
-    
-    [self begainAnimation];
 }
 
 #pragma mark - 懒加载

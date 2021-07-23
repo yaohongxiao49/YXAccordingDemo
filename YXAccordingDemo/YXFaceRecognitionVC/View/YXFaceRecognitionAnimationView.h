@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/** 动画完结回调 */
+typedef void(^YXFaceRecognitionAVBlock)(BOOL boolFinished);
+
 @interface YXFaceRecognitionAnimationView : UIView
 
 /** 皮肤分析 */
@@ -35,6 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
 /** 毛孔分析 */
 @property (weak, nonatomic) IBOutlet UILabel *poresLab;
 @property (weak, nonatomic) IBOutlet UILabel *poresPointLab;
+
+@property (nonatomic, copy) YXFaceRecognitionAVBlock yxFaceRecognitionAVBlock;
+@property (nonatomic, assign) BOOL boolEndAnimation;
+
+/** 开启动画 */
+- (void)begainAnimation;
 
 @end
 

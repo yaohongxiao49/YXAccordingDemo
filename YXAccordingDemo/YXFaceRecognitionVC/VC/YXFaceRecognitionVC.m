@@ -28,64 +28,47 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.view.backgroundColor = [UIColor whiteColor];
+    
     [self initView];
 }
 
-#pragma mark - 使用百度还是CIDetector
+#pragma mark - 使用CIDetector
 - (void)useMethodByOriginalImg:(UIImage *)originalImg {
     
     __weak typeof(self) weakSelf = self;
-    [SVProgressHUD showWithStatus:@"分析中，请稍后..."];
-    [RLHttpRequest getBaiduAIAPISkinAnalysisFromImg:originalImg showText:nil showSuccess:NO showError:NO finishBlock:^(YXFaceRecognitionBaseModel *model, BOOL boolSuccess) {
+    [self yxDetectingFaceByImg:originalImg finished:^(BOOL boolSuccess) {
         
         if (boolSuccess) {
-            YXFaceRecognitionMsgModel *msgModel = model.faceList[0];
-            YXFaceRecognitionMsgLocationModel *loactionModel = msgModel.location;
-            
-            [weakSelf tailoringImgByImg:originalImg location:loactionModel finished:^(BOOL success, UIImage *img) {
-            
-                msgModel.originalImg = originalImg;
-                msgModel.interceptionImg = img;
-                if (success) {
-                    [weakSelf pushToAnimationVCByModel:model];
-                }
-                [SVProgressHUD dismiss];
-            }];
+            [weakSelf pushToAnimationVCByImg:originalImg];
         }
         else {
-            [SVProgressHUD dismiss];
+            [SVProgressHUD showErrorWithStatus:@"请包涵面容"];
         }
     }];
 }
 
-#pragma mark - 裁剪图片
-- (void)tailoringImgByImg:(UIImage *)img location:(YXFaceRecognitionMsgLocationModel *)location finished:(void(^)(BOOL success, UIImage *img))finished {
+#pragma mark - 人脸位置检测
+- (void)yxDetectingFaceByImg:(UIImage *)img finished:(void(^)(BOOL boolSuccess))finished {
     
-    CGRect faceBounds = CGRectMake(location.left, location.top, location.width, location.height);
-    //cgImage计算的尺寸是像素，需要与空间的尺寸做个计算
-    //下面几句是为了获取到额头部位做的处理，如果只需要定位到五官可直接取faceBounds的值
-    //屏幕尺寸换算原图元素尺寸比例（以宽高比为3：4设置）
-    CGFloat faceProportionWidth = faceBounds.size.width * 1.4;
-    CGFloat faceProportionHeight = faceProportionWidth / 3 * 4;
-    CGFloat faceOffsetX = faceBounds.origin.x - (faceProportionWidth / 6);
-    CGFloat faceOffsetY = faceBounds.origin.y - (faceProportionHeight / 3);
-    faceBounds.origin.x = faceOffsetX;
-    faceBounds.origin.y = faceOffsetY;
-    faceBounds.size.width = faceProportionWidth;
-    faceBounds.size.height = faceProportionHeight;
-    
-    CGImageRef cgImage = CGImageCreateWithImageInRect(img.CGImage, faceBounds);
-    UIImage *resultImg = [UIImage imageWithCGImage:cgImage];
-    CGImageRelease(cgImage);
-    
-    finished(YES, resultImg);
+    if (img) {
+        CIImage *cgImg = [[CIImage alloc] initWithImage:img];
+        CIContext *context = [CIContext contextWithOptions:nil];
+        CIDetector *faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:context options:@{CIDetectorAccuracy:CIDetectorAccuracyHigh}];
+        //检测到的人脸数组
+        NSArray *faceArr = [faceDetector featuresInImage:cgImg];
+        finished(faceArr.count > 0);
+    }
+    else {
+        finished(NO);
+    }
 }
 
 #pragma mark - 跳转至动画页
-- (void)pushToAnimationVCByModel:(YXFaceRecognitionBaseModel *)model {
+- (void)pushToAnimationVCByImg:(UIImage *)img {
     
     YXFaceRecognitionAnimationVC *vc = [[YXFaceRecognitionAnimationVC alloc] init];
-    vc.model = model;
+    vc.originalImg = img;
     [self.navigationController pushViewController:vc animated:YES];
 }
 

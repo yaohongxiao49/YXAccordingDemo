@@ -87,7 +87,7 @@
                     finishBlock(model, YES);
                 }
                 else {
-                    finishBlock(responseObject, NO);
+                    finishBlock(nil, NO);
                 }
             }] resume];
         }

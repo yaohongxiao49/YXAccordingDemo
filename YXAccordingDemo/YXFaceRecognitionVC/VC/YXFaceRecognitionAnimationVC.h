@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YXFaceRecognitionAnimationVC : UIViewController
 
-@property (nonatomic, strong) YXFaceRecognitionBaseModel *model;
+/** 原图 */
+@property (nonatomic, strong) UIImage *originalImg;
 
 @end
 

@@ -47,6 +47,7 @@
 		8484C95426A80AF6001E9193 /* YXFaceRecognitionBaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8484C94D26A80AF6001E9193 /* YXFaceRecognitionBaseModel.m */; };
 		8484C95526A80AF6001E9193 /* YXFaceRecognitionMsgModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8484C94E26A80AF6001E9193 /* YXFaceRecognitionMsgModel.m */; };
 		8484C95626A80AF6001E9193 /* YXFaceRecognitionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 8484C95326A80AF6001E9193 /* YXFaceRecognitionVC.m */; };
+		84DBCD6B26AA8E15001C6699 /* YXFaceRecognitionResultVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DBCD6A26AA8E15001C6699 /* YXFaceRecognitionResultVC.m */; };
 		84FE852926A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FE852826A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m */; };
 		84FE853326A9397A00B5968E /* YXFaceRecognitionAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FE853226A9397A00B5968E /* YXFaceRecognitionAnimationView.m */; };
 /* End PBXBuildFile section */
@@ -141,6 +142,8 @@
 		8484C95026A80AF6001E9193 /* YXFaceRecognitionBaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionBaseModel.h; sourceTree = "<group>"; };
 		8484C95226A80AF6001E9193 /* YXFaceRecognitionVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionVC.h; sourceTree = "<group>"; };
 		8484C95326A80AF6001E9193 /* YXFaceRecognitionVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YXFaceRecognitionVC.m; sourceTree = "<group>"; };
+		84DBCD6926AA8E15001C6699 /* YXFaceRecognitionResultVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionResultVC.h; sourceTree = "<group>"; };
+		84DBCD6A26AA8E15001C6699 /* YXFaceRecognitionResultVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YXFaceRecognitionResultVC.m; sourceTree = "<group>"; };
 		84FE852726A90E7E00B5968E /* YXFaceRecognitionAnimationVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionAnimationVC.h; sourceTree = "<group>"; };
 		84FE852826A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YXFaceRecognitionAnimationVC.m; sourceTree = "<group>"; };
 		84FE853126A9397A00B5968E /* YXFaceRecognitionAnimationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YXFaceRecognitionAnimationView.h; sourceTree = "<group>"; };
@@ -439,6 +442,8 @@
 				8484C95326A80AF6001E9193 /* YXFaceRecognitionVC.m */,
 				84FE852726A90E7E00B5968E /* YXFaceRecognitionAnimationVC.h */,
 				84FE852826A90E7E00B5968E /* YXFaceRecognitionAnimationVC.m */,
+				84DBCD6926AA8E15001C6699 /* YXFaceRecognitionResultVC.h */,
+				84DBCD6A26AA8E15001C6699 /* YXFaceRecognitionResultVC.m */,
 			);
 			path = VC;
 			sourceTree = "<group>";
@@ -643,6 +648,7 @@
 				8463B230261C621100A9A27B /* NSMutableArray+YXCategory.m in Sources */,
 				8463B1B6261C61FD00A9A27B /* ViewController.m in Sources */,
 				8463B22F261C621100A9A27B /* RLShareHTTPManager.m in Sources */,
+				84DBCD6B26AA8E15001C6699 /* YXFaceRecognitionResultVC.m in Sources */,
 				8463B1B0261C61FD00A9A27B /* AppDelegate.m in Sources */,
 				8463B231261C621100A9A27B /* NSMutableDictionary+YXCategory.m in Sources */,
 				8463B235261C621100A9A27B /* UIButton+YXCategory.m in Sources */,

@@ -20,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 /** json字符串 */
 @property (nonatomic, copy) NSString *jsonStr;
 
+#pragma mark - 数据传递时使用
+/** 拍摄原图 */
+@property (nonatomic, strong) UIImage *originalImg;
+/** 截取后图片 */
+@property (nonatomic, strong) UIImage *interceptionImg;
+
 - (instancetype)initWithDic:(NSDictionary *)dic;
 
 @end

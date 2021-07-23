@@ -429,8 +429,8 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
     CGPathRelease(path);
 }
 
-#pragma mark - 人脸位置检测，并裁剪包含五官的人脸
-+ (void)yxDetectingAndCuttingFaceByImg:(UIImage *)img boolAccurate:(BOOL)boolAccurate finished:(void(^)(BOOL success, UIImage *img))finished {
+#pragma mark - 人脸位置检测
++ (void)yxDetectingFaceByImg:(UIImage *)img finished:(void(^)(BOOL boolSuccess))finished {
     
     if (img) {
         CIImage *cgImg = [[CIImage alloc] initWithImage:img];
@@ -438,43 +438,10 @@ void yxRGBToHSV(float r, float g, float b, float *h, float *s, float *v) {
         CIDetector *faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:context options:@{CIDetectorAccuracy:CIDetectorAccuracyHigh}];
         //检测到的人脸数组
         NSArray *faceArr = [faceDetector featuresInImage:cgImg];
-        if (faceArr.count > 0) {
-            //检测到人脸时获取最后一次监测到的人脸
-            CIFeature *faceFeature = [faceArr lastObject];
-            CGRect faceBounds = faceFeature.bounds;
-            //cgImage计算的尺寸是像素，需要与空间的尺寸做个计算
-            //下面几句是为了获取到额头部位做的处理，如果只需要定位到五官可直接取faceBounds的值
-            //屏幕尺寸换算原图元素尺寸比例（以宽高比为3：4设置）
-            CGFloat faceProportionWidth = faceBounds.size.width * 1.4;
-            CGFloat faceProportionHeight = faceProportionWidth / 3 * 4;
-            CGFloat faceOffsetX = faceBounds.origin.x - (faceProportionWidth / 6);
-            CGFloat faceOffsetY = boolAccurate ? faceBounds.size.height - (faceBounds.origin.y - (faceProportionHeight / 4)) : faceBounds.origin.y - (faceProportionHeight / 8);
-            faceBounds.origin.x = faceOffsetX;
-            faceBounds.origin.y = faceOffsetY;
-            faceBounds.size.width = faceProportionWidth;
-            faceBounds.size.height = faceProportionHeight;
-            
-            UIImage *resultImg;
-            //这种裁剪方法在低头时和抬头时会截取不到完整的脸部，但是可以定位全脸位置更精确
-            if (boolAccurate) {
-                CGImageRef cgImage = CGImageCreateWithImageInRect(img.CGImage, faceBounds);
-                resultImg = [UIImage imageWithCGImage:cgImage];
-                CGImageRelease(cgImage);
-            }
-            else {
-                //这种裁剪方法不会出现脸部裁剪不到的情况，但是会裁剪到脖子的位置
-                CIImage *faceImg = [cgImg imageByCroppingToRect:faceBounds];
-                resultImg = [UIImage imageWithCGImage:[context createCGImage:faceImg fromRect:faceImg.extent]];
-            }
-            
-            finished(YES, resultImg);
-        }
-        else {
-            finished(NO, nil);
-        }
+        finished(faceArr.count > 0);
     }
     else {
-        finished(NO, nil);
+        finished(NO);
     }
 }
 
