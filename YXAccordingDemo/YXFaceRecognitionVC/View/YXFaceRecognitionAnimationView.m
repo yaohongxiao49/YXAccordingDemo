@@ -54,6 +54,32 @@
         }
     }];
 }
+- (void)begainNewAnimation {
+    
+    __weak typeof(self) weakSelf = self;
+    UILabel *valueLab = (UILabel *)_valueLabArr[_animationTag];
+    UILabel *animationLab = (UILabel *)_animationLabArr[_animationTag];
+    CGFloat time = kFaceAnimationTime /(CGFloat)_animationLabArr.count;
+    [UIView animateWithDuration:time delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
+        
+        valueLab.textColor = [UIColor blueColor];
+        [animationLab sizeToFit];
+    } completion:^(BOOL finished) {
+        
+        if (weakSelf.animationTag < weakSelf.animationLabArr.count - 1) {
+            valueLab.textColor = [UIColor redColor];
+            animationLab.width = 0;
+            weakSelf.animationTag++;
+            [weakSelf begainNewAnimation];
+        }
+        else {
+            [weakSelf endViewAnimation];
+            if (weakSelf.yxFaceRecognitionAVBlock) {
+                weakSelf.yxFaceRecognitionAVBlock(YES);
+            }
+        }
+    }];
+}
 
 #pragma mark - 末尾动画持续
 - (void)endViewAnimation {
@@ -80,16 +106,16 @@
     NSInteger i = 0;
     for (NSString *value in self.valueArr) {
         UILabel *titleLab = [[UILabel alloc] initWithFrame:CGRectMake(15, 15 + i *(30 + 15), 100, 30)];
-        titleLab.textColor = [UIColor greenColor];
+        titleLab.textColor = [UIColor redColor];
         titleLab.textAlignment = NSTextAlignmentLeft;
         titleLab.font = [UIFont systemFontOfSize:14];
-        titleLab.alpha = 0;
+        titleLab.alpha = 1;
         titleLab.text = value;
         [titleLab sizeToFit];
         [self addSubview:titleLab];
         
         UILabel *pointLab = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleLab.frame) + 5, CGRectGetMinY(titleLab.frame), 0, CGRectGetHeight(titleLab.frame))];
-        pointLab.textColor = [UIColor greenColor];
+        pointLab.textColor = [UIColor blueColor];
         pointLab.textAlignment = NSTextAlignmentLeft;
         pointLab.font = [UIFont systemFontOfSize:14];
         pointLab.text = @". . .";

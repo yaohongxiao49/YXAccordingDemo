@@ -44,6 +44,7 @@ typedef void(^YXFaceRecognitionAVBlock)(BOOL boolFinished);
 
 /** 开启动画 */
 - (void)begainAnimation;
+- (void)begainNewAnimation;
 
 @end
 

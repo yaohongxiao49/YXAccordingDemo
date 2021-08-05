@@ -8,6 +8,7 @@
 #import "ViewController.h"
 #import "YXSeparationVC.h"
 #import "YXFaceRecognitionVC.h"
+#import "YXFaceRecognitionAnimationView.h"
 
 @interface ViewController ()
 
@@ -39,6 +40,10 @@
     [identBtn setTitle:@"人脸识别-拍照" forState:UIControlStateNormal];
     [identBtn addTarget:self action:@selector(progressIdentBtn) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:identBtn];
+    
+    YXFaceRecognitionAnimationView *animationView = [[YXFaceRecognitionAnimationView alloc] initWithFrame:CGRectMake(0, 120, [[UIScreen mainScreen] bounds].size.width, 400)];
+    [self.view addSubview:animationView];
+    [animationView begainNewAnimation];
 }
 
 
